@@ -5,7 +5,7 @@ description: Review recently changed code with three parallel subagents, have a 
 
 # Code Simplifier
 
-Simplify the code just changed, without altering its behavior. This adapts Anthropic's code-simplifier guidance and adds a parallel review pass confirmed by a judge.
+Simplify the code just changed, without altering its behavior.
 
 ## Phase 1: Find the changes
 
@@ -40,7 +40,7 @@ Launch one more subagent (`explore`, read-only) with the diff and the three repo
 
 ## Phase 4: Simplify and fix
 
-Apply the judge's confirmed findings, following Anthropic's code-simplifier rules:
+Apply the judge's confirmed findings with these rules:
 
 - **Preserve functionality.** Change how the code does it, never what it does. Outputs and behavior stay identical.
 - **Minimize the diff.** Simplify only what the change actually touched. One changed line does not license rewriting the whole function, file, or module. If a real problem sits in untouched code, note it instead of fixing it here. Prefer the smallest edit that resolves a finding.
@@ -54,5 +54,3 @@ Skip anything the judge discarded.
 ## Phase 5: Verify
 
 Run the checks the project already has — tests, typecheck, lint — and confirm behavior is unchanged. If a check fails, revert that simplification rather than editing the test. Finish with a short summary of what was fixed, or confirm the code was already clean.
-
-<!-- Adapted from Anthropic's code-simplifier agent (Apache-2.0); see NOTICE. -->
