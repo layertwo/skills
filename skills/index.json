@@ -1,0 +1,9 @@
+{
+  "skills": [
+    {
+      "name": "code-simplifier",
+      "version": "1",
+      "files": ["code-simplifier.md"]
+    }
+  ]
+}
