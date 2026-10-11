@@ -1,6 +1,6 @@
 ---
 name: Code Simplifier
-description: Review recently changed code with three parallel subagents, have a judge confirm the findings, ask the user which to fix, then simplify only what the change touched and verify behavior is preserved.
+description: Review recently changed code with three parallel subagents and a judge, then fix the obvious findings and confirm the rest with the user, listing all of it in a table.
 ---
 
 # Code Simplifier
@@ -39,13 +39,25 @@ Send all three in one message so they run concurrently. Use the `subagent` tool 
 
 Launch one more subagent (`explore`, read-only) with the diff and the three reports. It rules on each finding: is it real, does it apply to this code, and is the suggested change correct and behavior-preserving? It discards false positives, duplicates, anything not worth doing, and any finding whose fix would sprawl beyond the changed code. Return the surviving findings, each with a file and line.
 
-## Phase 4: Confirm with the user
+## Phase 4: Present the work as a table
 
-Present the judge's surviving findings as a short list, each with the file, the line, and the change you propose. Make no edits yet. The reviewers and the judge identify the work; only the user decides whether it gets done. Wait for the user to confirm which findings to act on — or to approve the whole list — before touching any code.
+Print the judge's surviving findings as a table before editing anything — one row per finding, with the file and line, what you found, and what happens next. The table is the record of everything this skill does, so keep every row in it.
+
+| File | Finding | Action |
+| --- | --- | --- |
+| `src/config.ts:42` | re-implements the existing `parseConfig()` helper | fix — call the helper |
+| `src/loader.ts:88` | only fixable by rewriting the whole function | ask — wider than the diff |
+
+Then decide each row:
+
+- **Obvious** — clear, localized, and behavior-preserving: fix it, no confirmation needed.
+- **Judgment call** — larger, ambiguous, or debatable: ask the user.
+
+Ask about the judgment-call rows and wait for the answer. Obvious rows need no question.
 
 ## Phase 5: Simplify and fix
 
-Apply the confirmed findings with these rules:
+Apply the obvious rows and the ones the user approved, with these rules:
 
 - **Preserve functionality.** Change how the code does it, never what it does. Outputs and behavior stay identical.
 - **Minimize the diff.** Simplify only what the change actually touched. One changed line does not license rewriting the whole function, file, or module. If a real problem sits in untouched code, note it instead of fixing it here. Prefer the smallest edit that resolves a finding.
