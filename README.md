@@ -4,18 +4,26 @@ My personal OpenCode skills.
 
 ## Install
 
-Point OpenCode at the `skills/` directory in your global config:
+OpenCode loads these skills from the repo's HTTP catalog. Point the `skills` array at
+the raw GitHub base URL:
 
 ```jsonc
 // ~/.config/opencode/opencode.jsonc
 {
   "$schema": "https://opencode.ai/config.json",
-  "skills": ["~/skills/skills"]
+  "skills": [
+    "https://raw.githubusercontent.com/layertwo/skills/mainline/skills/"
+  ]
 }
 ```
 
-OpenCode reloads on config change. The model can then auto-load a skill when it is
-relevant, or you can mention `@code-simplifier`.
+The catalog is `skills/index.json`. It is **generated** — don't edit it by hand. Each
+skill's `version` is a content hash, so OpenCode refreshes its cache exactly when a skill
+changes. The model then auto-loads a skill when it is relevant, or you can mention
+`@code-simplifier`.
+
+To use a local checkout instead, point `skills` at a single skill directory, e.g.
+`"~/skills/skills/code-simplifier"`.
 
 ## Skills
 
@@ -25,9 +33,15 @@ relevant, or you can mention `@code-simplifier`.
 
 ## Adding a skill
 
-Create `skills/<id>/SKILL.md` with `name` and `description` frontmatter. The directory
-name is the skill ID. Keep supporting files beside it; paths inside the skill are
-relative to that directory.
+Create `skills/<id>/<id>.md` with `name` and `description` frontmatter. The filename sets
+the skill ID, so keep it equal to the directory name. Supporting files beside it are
+picked up too.
+
+Then regenerate the catalog and commit it with the skill:
+
+```sh
+node scripts/build-index.mjs
+```
 
 ## License
 
