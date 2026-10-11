@@ -37,15 +37,11 @@ Create `skills/<id>/<id>.md` with `name` and `description` frontmatter. The file
 the skill ID, so keep it equal to the directory name. Supporting files beside it are
 picked up too.
 
-Then regenerate the catalog:
+Then regenerate the catalog and commit it with the skill:
 
 ```sh
 node scripts/build-index.mjs
 ```
-
-Pushing to `mainline` runs the same script in CI (`.github/workflows/catalog.yml`) and
-commits `index.json` if anything changed, so any skill dropped under `skills/` is picked
-up without editing the manifest.
 
 ## License
 
