@@ -17,9 +17,10 @@ the raw GitHub base URL:
 }
 ```
 
-The catalog is `skills/index.json`. Bump a skill's `version` there whenever you change
-it, or OpenCode keeps serving its cached copy. The model then auto-loads a skill when it
-is relevant, or you can mention `@code-simplifier`.
+The catalog is `skills/index.json`. It is **generated** — don't edit it by hand. Each
+skill's `version` is a content hash, so OpenCode refreshes its cache exactly when a skill
+changes. The model then auto-loads a skill when it is relevant, or you can mention
+`@code-simplifier`.
 
 To use a local checkout instead, point `skills` at a single skill directory, e.g.
 `"~/skills/skills/code-simplifier"`.
@@ -32,10 +33,19 @@ To use a local checkout instead, point `skills` at a single skill directory, e.g
 
 ## Adding a skill
 
-Create `skills/<id>/<id>.md` with `name` and `description` frontmatter, then add an entry
-to `skills/index.json` (`name`, `version`, `files`). The filename sets the skill ID, so
-keep it equal to the directory name. Keep supporting files beside it and list them in
-`files`.
+Create `skills/<id>/<id>.md` with `name` and `description` frontmatter. The filename sets
+the skill ID, so keep it equal to the directory name. Supporting files beside it are
+picked up too.
+
+Then regenerate the catalog:
+
+```sh
+node scripts/build-index.mjs
+```
+
+Pushing to `mainline` runs the same script in CI (`.github/workflows/catalog.yml`) and
+commits `index.json` if anything changed, so any skill dropped under `skills/` is picked
+up without editing the manifest.
 
 ## License
 

@@ -2,8 +2,10 @@
   "skills": [
     {
       "name": "code-simplifier",
-      "version": "1",
-      "files": ["code-simplifier.md"]
+      "version": "82e5b0cd696e",
+      "files": [
+        "code-simplifier.md"
+      ]
     }
   ]
 }
