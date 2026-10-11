@@ -1,0 +1,11 @@
+This repository includes material adapted from Anthropic's claude-plugins-official,
+licensed under the Apache License, Version 2.0:
+
+  https://github.com/anthropics/claude-plugins-official
+  plugins/code-simplifier/agents/code-simplifier.md
+
+skills/code-simplifier/SKILL.md quotes and adapts that agent's guidance for OpenCode
+and adds a parallel-review workflow. The files were modified for OpenCode: the agent
+frontmatter, tool names, and the CLAUDE.md reference were changed.
+
+The parallel three-subagent review pass is inspired by Claude Code's /simplify command.
