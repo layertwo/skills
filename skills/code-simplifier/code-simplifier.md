@@ -23,6 +23,7 @@ Send all three in one message so they run concurrently. Use the `subagent` tool 
    - parameter sprawl instead of restructuring a function
    - near-duplicate blocks that should be unified
    - leaky abstractions, and stringly-typed code where a constant or type already exists
+   - wrong altitude: the change sits at the wrong level of abstraction — a new abstraction for a single caller, a hardcoded or special-cased value where a general fix belongs, a symptom patched instead of the cause, or a function mixing high-level flow with low-level detail. Keep it at the altitude of the surrounding code
    - unnecessary nesting
    - comments that narrate *what* the code does; keep only non-obvious *why*
 
