@@ -1,21 +1,26 @@
 ---
 name: Code Simplifier
-description: Review recently changed code with three parallel subagents and a judge, then fix the obvious findings and confirm the rest with the user, listing all of it in a table.
+description: Review code for simplification — the recent changes or, on a full pass, the whole project — with three parallel subagents and a judge, then fix the obvious findings and confirm the rest with the user, listing all of it in a table.
 ---
 
 # Code Simplifier
 
-Simplify the code just changed, without altering its behavior.
+Simplify code — the recent changes, or the whole project — without altering its behavior.
 
-## Phase 1: Find the changes
+## Phase 1: Choose the scope
 
-Run `git diff` (use `git diff HEAD` when changes are staged). If there are no git changes, review the files edited earlier in this conversation.
+Default to the changed code. Switch to the whole project when there are no changes or the user asks for a full-pass review.
+
+- **Changed code**: run `git diff` (use `git diff HEAD` when changes are staged) and review that.
+- **Whole project**: review every source file in the project, not just what changed.
+
+Say which scope you picked.
 
 ## Phase 2: Launch three review subagents in parallel
 
-Send all three in one message so they run concurrently. Use the `subagent` tool with the read-only `explore` agent, give each the full diff, and tell it to report only on the changed code — not to propose refactors of untouched code. Each may search the codebase and the libraries it already imports for existing patterns, methods, or functions that would simplify the change.
+Send all three in one message so they run concurrently. Use the `subagent` tool with the read-only `explore` agent, give each the scope from Phase 1, and tell each one to stay inside it: in changed-code mode, report only on the changed code — not refactors of untouched code; in whole-project mode, survey the whole project. Each may search the codebase and the libraries it already imports for existing patterns, methods, or functions that would simplify the code.
 
-1. **Reuse** — find existing code the new code re-implements. Search the codebase for a pattern, helper, or method that already does the job: shared and utility modules, files adjacent to the change, the standard library, and the libraries the project already imports. Flag hand-rolled logic one of them already covers — string and path manipulation, environment checks, ad-hoc type guards, data-shape conversions, sort/group/unique logic. Prefer the standard library or an already-imported library over new code, and do not recommend adding a new dependency unless it is absolutely necessary.
+1. **Reuse** — find code that re-implements something that already exists. Search the codebase for a pattern, helper, or method that already does the job: shared and utility modules, nearby files, the standard library, and the libraries the project already imports. Flag hand-rolled logic one of them already covers — string and path manipulation, environment checks, ad-hoc type guards, data-shape conversions, sort/group/unique logic. Prefer the standard library or an already-imported library over new code, and do not recommend adding a new dependency unless it is absolutely necessary.
 
 2. **Quality** — find patterns that hurt clarity and maintainability:
    - dead code and leftovers: unused imports, variables, or parameters; unreachable branches; commented-out code; stray debug output
@@ -37,16 +42,16 @@ Send all three in one message so they run concurrently. Use the `subagent` tool 
 
 ## Phase 3: Confirm with a judge
 
-Launch one more subagent (`explore`, read-only) with the diff and the three reports. It rules on each finding: is it real, does it apply to this code, and is the suggested change correct and behavior-preserving? It discards false positives, duplicates, anything not worth doing, and any finding whose fix would sprawl beyond the changed code. Return the surviving findings, each with a file and line.
+Launch one more subagent (`explore`, read-only) with the scope and the three reports. It rules on each finding: is it real, does it apply to this code, and is the suggested change correct and behavior-preserving? It discards false positives, duplicates, anything not worth doing, and any finding whose fix would sprawl far beyond the finding itself — past the diff in changed-code mode, past the file in whole-project mode. Return the surviving findings, each with a file and line.
 
 ## Phase 4: Present the work as a table
 
-Print the judge's surviving findings as a table before editing anything — one row per finding, with the file and line, what you found, and what happens next. The table is the record of everything this skill does, so keep every row in it.
+Print the judge's surviving findings as a table before editing anything — one row per finding, with the file and line, what you found, and what happens next. The table is the record of everything this skill does, so keep every row in it. On a whole-project pass, order the rows by impact so the user can triage.
 
 | File | Finding | Action |
 | --- | --- | --- |
 | `src/config.ts:42` | re-implements the existing `parseConfig()` helper | fix — call the helper |
-| `src/loader.ts:88` | only fixable by rewriting the whole function | ask — wider than the diff |
+| `src/loader.ts:88` | only fixable by rewriting the whole function | ask — wider than the finding |
 
 Then decide each row:
 
@@ -60,7 +65,7 @@ Ask about the judgment-call rows and wait for the answer. Obvious rows need no q
 Apply the obvious rows and the ones the user approved, with these rules:
 
 - **Preserve functionality.** Change how the code does it, never what it does. Outputs and behavior stay identical.
-- **Minimize the diff.** Simplify only what the change actually touched. One changed line does not license rewriting the whole function, file, or module. If a real problem sits in untouched code, note it instead of fixing it here. Prefer the smallest edit that resolves a finding.
+- **Keep fixes small.** Prefer the smallest edit that resolves a finding. In changed-code mode, simplify only what the change actually touched — one changed line does not license rewriting the whole function, file, or module, and a problem in untouched code gets noted, not fixed here.
 - **Never remove** validation, error handling, security checks, tests, or accessibility. Do not change a public signature without checking its callers.
 - **Apply project standards.** Follow `AGENTS.md` and the conventions already in the codebase.
 - **Enhance clarity.** Reduce unnecessary nesting, drop redundant code and abstractions, use clear names, and prefer `switch` or `if`/`else` over nested ternaries. Choose clarity over brevity.
