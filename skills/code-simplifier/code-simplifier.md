@@ -1,6 +1,6 @@
 ---
 name: Code Simplifier
-description: Review code for simplification — the recent changes or, on a full pass, the whole project — with three parallel subagents and a judge, then fix the obvious findings and confirm the rest with the user, listing all of it in a table.
+description: Review code for simplification — the recent changes or, on a full pass, the whole project — with four parallel review subagents and a judge, then fix the obvious findings and confirm the rest with the user, listing all of it in a table.
 ---
 
 # Code Simplifier
@@ -16,15 +16,16 @@ Default to the changed code. Switch to the whole project when there are no chang
 
 Say which scope you picked.
 
-## Phase 2: Launch three review subagents in parallel
+## Phase 2: Launch four review subagents in parallel
 
-Send all three in one message so they run concurrently. Use the `subagent` tool with the read-only `explore` agent, give each the scope from Phase 1, and tell each one to stay inside it: in changed-code mode, report only on the changed code — not refactors of untouched code; in whole-project mode, survey the whole project. Each may search the codebase and the libraries it already imports for existing patterns, methods, or functions that would simplify the code.
+Send all four in one message so they run concurrently. Use the `subagent` tool with the read-only `explore` agent, give each the scope from Phase 1, and tell each one to stay inside it: in changed-code mode, report only on the changed code — not refactors of untouched code; in whole-project mode, survey the whole project. Each may search the codebase and the libraries it already imports for existing patterns, methods, or functions that would simplify the code.
 
 1. **Reuse** — find code that re-implements something that already exists. Search the codebase for a pattern, helper, or method that already does the job: shared and utility modules, nearby files, the standard library, and the libraries the project already imports. Flag hand-rolled logic one of them already covers — string and path manipulation, environment checks, ad-hoc type guards, data-shape conversions, sort/group/unique logic. Prefer the standard library or an already-imported library over new code, and do not recommend adding a new dependency unless it is absolutely necessary.
 
 2. **Quality** — find patterns that hurt clarity and maintainability:
    - dead code and leftovers: unused imports, variables, or parameters; unreachable branches; commented-out code; stray debug output
    - redundant state, or values that could be derived
+   - state and data shape: the wrong structure for the job (a linear scan where a set or map belongs), one fact stored in more than one place, or a shape that permits states that can never happen
    - parameter sprawl instead of restructuring a function
    - near-duplicate blocks that should be unified
    - leaky abstractions, and stringly-typed code where a constant or type already exists
@@ -40,9 +41,11 @@ Send all three in one message so they run concurrently. Use the `subagent` tool 
    - existence checks before operating (TOCTOU) — operate and handle the error
    - unbounded structures, missing cleanup, listener leaks
 
+4. **Removal** — find code that should not exist. Search for capability nothing uses: exported functions, types, or modules with no callers; parameters nothing passes; options, flags, or config nobody sets; abstractions that serve a single caller; scaffolding left "for later"; code kept only in case it is needed. Prefer deleting it over simplifying it.
+
 ## Phase 3: Confirm with a judge
 
-Launch one more subagent (`explore`, read-only) with the scope and the three reports. It rules on each finding: is it real, does it apply to this code, and is the suggested change correct and behavior-preserving? It discards false positives, duplicates, anything not worth doing, and any finding whose fix would sprawl far beyond the finding itself — past the diff in changed-code mode, past the file in whole-project mode. Return the surviving findings, each with a file and line.
+Launch one more subagent (`explore`, read-only) with the scope and the four reports. It rules on each finding: is it real, does it apply to this code, and is the suggested change correct and behavior-preserving? It discards false positives, duplicates, anything not worth doing, and any finding whose fix would sprawl far beyond the finding itself — past the diff in changed-code mode, past the file in whole-project mode. Return the surviving findings, each with a file and line.
 
 ## Phase 4: Present the work as a table
 
