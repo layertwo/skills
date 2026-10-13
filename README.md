@@ -31,6 +31,11 @@ To use a local checkout instead, point `skills` at a single skill directory, e.g
   (reuse, quality, efficiency), has a judge subagent confirm the findings, then
   simplifies and fixes only what the change touched and verifies behavior is preserved.
 
+- **`code-security-review`** — reviews the recent changes or the whole project with four
+  parallel subagents (injection; access & logic; crypto, secrets & client-side; dependencies,
+  config & defaults), has a verifier refute each candidate so only demonstrable findings
+  survive, then fixes the obvious ones, confirms the rest, and verifies behavior.
+
 ## Adding a skill
 
 Create `skills/<id>/<id>.md` with `name` and `description` frontmatter. The filename sets
