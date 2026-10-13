@@ -9,3 +9,14 @@ and adds a parallel-review workflow. The files were modified for OpenCode: the a
 frontmatter, tool names, and the CLAUDE.md reference were changed.
 
 The parallel three-subagent review pass is inspired by Claude Code's /simplify command.
+
+This repository also includes material adapted from Anthropic's claude-code-security-review,
+licensed under the MIT License:
+
+  https://github.com/anthropics/claude-code-security-review
+  claudecode/prompts.py
+
+skills/code-security-review/code-security-review.md draws on that prompt's high-confidence
+reporting rules — the minimize-false-positives bar, the confidence threshold, and the
+excluded issue types — and rewrites the workflow for OpenCode. Its differential scope and
+false-positive-verification approach are inspired by the Trail of Bits skills (CC-BY-SA-4.0).
