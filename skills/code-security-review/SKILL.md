@@ -1,5 +1,5 @@
 ---
-name: Code Security Review
+name: code-security-review
 description: Review code for security vulnerabilities — the recent changes or, on a full pass, the whole project — with four parallel review subagents and a refuting verifier, then fix the confirmed findings and confirm the rest with the user, listing all of it in a table. Use when asked to review code, a change, or a PR for security issues; check for vulnerabilities; audit a codebase; or look for injection, broken access control, secrets, weak crypto, or vulnerable dependencies.
 ---
 

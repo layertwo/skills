@@ -1,5 +1,5 @@
 ---
-name: Code Simplifier
+name: code-simplifier
 description: Review code for simplification — the recent changes or, on a full pass, the whole project — with four parallel review subagents and a judge, then fix the obvious findings and confirm the rest with the user, listing all of it in a table.
 ---
 

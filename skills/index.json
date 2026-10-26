@@ -2,16 +2,16 @@
   "skills": [
     {
       "name": "code-security-review",
-      "version": "09870df6e405",
+      "version": "5dc0a409bc2b",
       "files": [
-        "code-security-review.md"
+        "SKILL.md"
       ]
     },
     {
       "name": "code-simplifier",
-      "version": "12c746ab8f5b",
+      "version": "09630c9e7a9f",
       "files": [
-        "code-simplifier.md"
+        "SKILL.md"
       ]
     }
   ]
